@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package advertisement;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./proto/ad_service";
+
+service Advertisement {
+  rpc GetAd (GetAdvertisementRequest) returns (GetAdvertisementReply) {}
+  rpc SaveAd (SaveAdvertisementRequest) returns (google.protobuf.Empty) {}
+}
+
+enum AdType {
+  UNKNOWN = 0;
+  FILM = 1;
+  WEB = 2;
+  WEB_BAR = 3;
+  WEB_CORNER = 4;
+}
+
+message GetAdvertisementRequest {
+  AdType type = 1;
+}
+
+
+message GetAdvertisementReply {
+  string bucket = 1;
+  string file = 2;
+}
+
+message SaveAdvertisementRequest{
+  AdType type = 1;
+  string bucket = 2;
+  string file = 3;
+  google.protobuf.Timestamp expire_time = 4;
+}
