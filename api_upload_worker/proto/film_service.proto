@@ -1,0 +1,203 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+package film;
+option go_package = "./proto/film_service";
+
+service Film {
+  rpc GetBasicFilms(FilmBasicRequest) returns(FilmInformationListReply){}
+
+  rpc GetPopularTypeFilms(FilmPopularTypeRequest) returns(FilmInformationListReply){}
+  rpc GetPopularCategoryFilms(FilmPopularCategoryRequest) returns(FilmInformationListReply){}
+
+  rpc GetRankedFilms(FilmRankedRequest) returns(FilmRankedReply){}
+  rpc GetFilterFilms(FilmFilterRequest) returns(FilmInformationListReply){}
+
+  rpc GetSpecificFilm(FilmSpecificRequest) returns(FilmSpecificReply){}
+  rpc GetSpecificFilmRoutes(FilmSpecificRequest) returns(FilmSpecificRoutesReply){}
+
+  rpc GetSearchFilms(FilmSearchRequest) returns(FilmSearchReply){}
+
+  rpc SaveFilm(FilmSaveRequest) returns(google.protobuf.Empty){}
+  rpc SaveFilmEpisode(FilmSaveEpisodeRequest) returns(google.protobuf.Empty){}
+
+  rpc AddFilmToSearchEngine(FilmSpecificRequest) returns(google.protobuf.Empty){}
+  rpc AddFilmPopularity(FilmSpecificRequest) returns(google.protobuf.Empty){}
+}
+
+enum MediaType {
+  HOME = 0;
+  TV_SERIES=1;
+  ANIMATE=2;
+  MOVIE=3;
+  VARIETY_SHOWS=4;
+}
+enum MediaCategory {
+  ALL_CATEGORY=0;
+  TV_SERIES_CN_SERIES=1;
+  TV_SERIES_KR_SERIES=2;
+  TV_SERIES_US_SERIES=3;
+  TV_SERIES_JP_SERIES=4;
+  TV_SERIES_TW_SERIES=5;
+  TV_SERIES_HK_SERIES=6;
+  TV_SERIES_OVERSEAS_SERIES=7;
+  TV_SERIES_DOCUMENTARY_SERIES=8;
+  ANIMATE_ANIMATE=9;
+  MOVIE_DRAMA=10;
+  MOVIE_ACTION=11;
+  MOVIE_SCI_FI=12;
+  MOVIE_COMEDY=13;
+  MOVIE_HORROR=14;
+  MOVIE_ROMANCE=15;
+  MOVIE_WAR=16;
+  MOVIE_ANIMATED=17;
+  VARIETY_SHOW_VARIETY_SHOW=18;
+}
+enum MediaLocation{
+  ALL_LOCATION=0;
+  OTHER_LOCATION=1;
+  CH=2;
+  MAIN_LAND=3;
+  KR=4;
+  JP=5;
+  TW=6;
+  HK=7;
+  US=8;
+  EU_US=9;
+  TH=10;
+  GB=11;
+  FR=12;
+  SG=13;
+}
+enum OrderType{
+  UpdateTime=0;
+  UploadTime=1;
+  WEEKLY_POPULARITY=2;
+  TOTAL_POPULARITY=3;
+}
+enum SearchType{
+  TITLE=0;
+  CELEBRITY=1;
+}
+
+message FilmBasicRequest{
+  int32 offset=1;
+  int32 limit=2;
+}
+
+message FilmPopularTypeRequest{
+  int32 offset=1;
+  int32 limit=2;
+  MediaType type=3;
+}
+message FilmPopularCategoryRequest{
+  int32 offset=1;
+  int32 limit=2;
+  MediaCategory category=3;
+}
+message FilmFilterRequest{
+  int32 offset=1;
+  int32 limit=2;
+  MediaType type=3;
+  MediaCategory category=4;
+  MediaLocation location=5;
+  uint32 releaseYear=6;
+  OrderType orderType=7;
+}
+message FilmInformation {
+  string id = 1;
+  string title = 2;
+  string resource=3;
+  string state=4;
+  repeated string actors=5;
+}
+message FilmInformationListReply {
+  repeated FilmInformation filmInformation = 1;
+}
+
+message FilmSpecificRequest{
+  string id=1;
+}
+
+message FilmSpecificRoute{
+  string route=1;
+  repeated string episodes=2;
+}
+message FilmSpecificRoutesReply{
+  repeated FilmSpecificRoute routes=1;
+}
+message FilmSpecificReply {
+  string id = 1;
+  string title = 2;
+  string resource=3;
+  string state=4;
+  MediaCategory category=5;
+  repeated string actors=6;
+  repeated string directors=7;
+  MediaLocation location=8;
+  uint32 releaseYear=9;
+  google.protobuf.Timestamp updateTime=10;
+  int32 popularity=11;
+  string introduction=13;
+}
+
+message FilmRankedRequest{
+  int32 offset=1;
+  int32 limit=2;
+  MediaCategory category=3;
+}
+message FilmRanked{
+  string id=1;
+  string title=2;
+  int32 popularity=3;
+}
+message FilmRankedReply{
+  repeated FilmRanked rankedFilm=1;
+}
+
+message FilmSearchRequest{
+  SearchType searchType=1;
+  string content=2;
+  int32 offset=3;
+  int32 limit=4;
+}
+message FilmSearchResult{
+  string id=1;
+  string title=2;
+  string resource=3;
+  string state=4;
+  MediaCategory category=5;
+  repeated string actors=6;
+  repeated string director=7;
+  MediaLocation location=8;
+  string language=9;
+  uint32 releaseYear=10;
+  google.protobuf.Timestamp updateTime=11;
+  string introduction=12;
+}
+message FilmSearchReply{
+  repeated FilmSearchResult results=1;
+}
+
+message FilmSaveRequest{
+  string id = 1;
+  string title = 2;
+  string resource=3;
+  string state=4;
+  MediaType type=5;
+  MediaCategory category=6;
+  repeated string actors=7;
+  repeated string directors=8;
+  MediaLocation location=9;
+  uint32 releaseYear=10;
+  string introduction=11;
+  string language=12;
+}
+message FilmSaveEpisodeRequest{
+  string id=1;
+  string route=2;
+  string episode=3;
+  string state=4;
+}
