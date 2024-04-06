@@ -1,0 +1,262 @@
+version: '3.3'
+services:
+  api-affair:
+    image: api-affair
+    build: ../../api_affair
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      FILM_SERVICE_HOST: api-film-service
+      FILM_SERVICE_PORT: 8080
+      AD_SERVICE_HOST: api-ad-service
+      AD_SERVICE_PORT: 8080
+      CDN_ADDRESS: http://127.0.0.1
+    depends_on:
+      api-film-service:
+        condition: service_started
+
+  api-media:
+    image: api-media
+    build: ../../api_media
+    restart: always
+    environment:
+      MINIO_HOST: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY_ID: DefaultUser
+      MINIO_ACCESS_KEY_SECRET: DefaultPassword
+      MINIO_TOKEN: ""
+      AD_SERVICE_HOST: api-ad-service
+      AD_SERVICE_PORT: 8080
+      CDN_ADDRESS: http://127.0.0.1
+    depends_on:
+      minio:
+        condition: service_started
+      api-ad-service:
+        condition: service_started
+      api-film-service:
+        condition: service_started
+  api-upload:
+    image: api-upload
+    build: ../../api_upload
+    restart: always
+    environment:
+      MINIO_HOST: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY_ID: DefaultUser
+      MINIO_ACCESS_KEY_SECRET: DefaultPassword
+      MINIO_TOKEN: ""
+      AD_SERVICE_HOST: api-ad-service
+      AD_SERVICE_PORT: 8080
+      FILM_SERVICE_HOST: api-film-service
+      FILM_SERVICE_PORT: 8080
+      KAFKA_HOST: kafka
+      KAFKA_PORT: 9092
+    depends_on:
+      minio:
+        condition: service_started
+      api-ad-service:
+        condition: service_started
+      api-film-service:
+        condition: service_started
+  api-upload-worker:
+    image: api-upload-worker
+    build: ../../api_upload_worker
+    restart: always
+    environment:
+      KAFKA_HOST: kafka
+      KAFKA_PORT: 9092
+      KAFKA_FILM_TOPIC: Default-Film-Topic
+      KAFKA_AD_TOPIC: Default-Ad-Topic
+      KAFKA_CONSUMER_GROUP: Default-Consumer-Group
+      KAFKA_FILM_CONSUMER_REPLICAS: 1
+      KAFKA_AD_CONSUMER_REPLICAS: 1
+      MINIO_HOST: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY_ID: DefaultUser
+      MINIO_ACCESS_KEY_SECRET: DefaultPassword
+      MINIO_TOKEN: ""
+      AD_SERVICE_HOST: api-ad-service
+      AD_SERVICE_PORT: 8080
+      FILM_SERVICE_HOST: api-film-service
+      FILM_SERVICE_PORT: 8080
+    depends_on:
+      api-ad-service:
+        condition: service_started
+      api-film-service:
+        condition: service_started
+      minio:
+        condition: service_started
+      kafka:
+        condition: service_started
+
+  api-film-service:
+    image: api-film-service
+    build: ../../api_film_service
+    restart: always
+    environment:
+      MONGODB_HOST: mongodb
+      MONGODB_PORT: 27017
+      MONGODB_USER: DefaultUser
+      MONGODB_PASSWORD: DefaultPassword
+      MONGODB_DATABASE: DefaultFilmDb
+      ELASTICSEARCH_HOST: elasticsearch
+      ELASTICSEARCH_PORT: 9200
+      ELASTICSEARCH_PASSWORD: DefaultPassword
+      SERVER_PROTOCOL: tcp
+      SERVER_PORT: 8080
+    ports:
+      - "9090:8080"
+    depends_on:
+      mongodb:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+  api-ad-service:
+    image: api-ad-service
+    build: ../../api_ad_service
+    restart: always
+    environment:
+      MONGODB_HOST: mongodb
+      MONGODB_PORT: 27017
+      MONGODB_USER: DefaultUser
+      MONGODB_PASSWORD: DefaultPassword
+      MONGODB_DATABASE: DefaultAdvertisementDb
+      SERVER_PROTOCOL: tcp
+      SERVER_PORT: 8080
+    depends_on:
+      mongodb:
+        condition: service_started
+
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: DefaultUser
+      MONGO_INITDB_ROOT_PASSWORD: DefaultPassword
+    ports:
+      - "27017:27017"
+  minio:
+    image: minio/minio:latest
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: DefaultUser
+      MINIO_ROOT_PASSWORD: DefaultPassword
+    command: server /data
+    ports:
+      - "9000:9000"
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    restart: always
+    ports:
+      - "9200:9200"
+    environment:
+      - "discovery.type=single-node"
+      - "xpack.security.enabled=false"
+      - "ELASTIC_PASSWORD=DefaultPassword"
+      - "KIBANA_PASSWORD=DefaultPassword"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+  redis:
+    image: redis:latest
+    restart: always
+    command: redis-server --requirepass DefaultPassword
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=DefaultUser
+      - GF_SECURITY_ADMIN_PASSWORD=DefaultPassword
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+  prometheus:
+    restart: always
+    image: prom/prometheus
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  nginx:
+    image: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      api-affair:
+        condition: service_started
+      api-upload:
+        condition: service_started
+      api-media:
+        condition: service_started
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    restart: always
+    command:
+      - '-nginx.scrape-uri=http://nginx/status'
+    ports:
+      - "9113:9113"
+    depends_on:
+      - nginx
+  node_exporter:
+    restart: always
+    image: prom/node-exporter:latest
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)"
+  kafka:
+    image: confluentinc/confluent-local:latest
+    ports:
+      - "9092:9092"
+      - "8082:8082"
+    restart: always
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: 'kafka:29092'
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
+      CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
+
+volumes:
+  mongodb_data:
+  minio_data:
+  elasticsearch_data:
+  redis_data:
+  grafana-storage:
+  prometheus-data:
