@@ -1,23 +1,20 @@
 version: '3.3'
 services:
   api-affair:
-    image: api-affair
+    image: tcweeei/gimy-clone-api-affair:latest
     build: ../../api_affair
     restart: always
-    ports:
-      - "8080:8080"
     environment:
       FILM_SERVICE_HOST: api-film-service
       FILM_SERVICE_PORT: 8080
       AD_SERVICE_HOST: api-ad-service
       AD_SERVICE_PORT: 8080
-      CDN_ADDRESS: http://127.0.0.1
+      CDN_ADDRESS: http://api-media:8080
     depends_on:
       api-film-service:
         condition: service_started
-
   api-media:
-    image: api-media
+    image: tcweeei/gimy-clone-api-media:latest
     build: ../../api_media
     restart: always
     environment:
@@ -37,7 +34,7 @@ services:
       api-film-service:
         condition: service_started
   api-upload:
-    image: api-upload
+    image: tcweeei/gimy-clone-api-upload:latest
     build: ../../api_upload
     restart: always
     environment:
@@ -60,7 +57,7 @@ services:
       api-film-service:
         condition: service_started
   api-upload-worker:
-    image: api-upload-worker
+    image: tcweeei/gimy-clone-api-upload-worker:latest
     build: ../../api_upload_worker
     restart: always
     environment:
@@ -89,9 +86,8 @@ services:
         condition: service_started
       kafka:
         condition: service_started
-
   api-film-service:
-    image: api-film-service
+    image: tcweeei/gimy-clone-api-film-service:latest
     build: ../../api_film_service
     restart: always
     environment:
@@ -105,15 +101,13 @@ services:
       ELASTICSEARCH_PASSWORD: DefaultPassword
       SERVER_PROTOCOL: tcp
       SERVER_PORT: 8080
-    ports:
-      - "9090:8080"
     depends_on:
       mongodb:
         condition: service_started
       elasticsearch:
         condition: service_started
   api-ad-service:
-    image: api-ad-service
+    image: tcweeei/gimy-clone-api-ad-service:latest
     build: ../../api_ad_service
     restart: always
     environment:
@@ -128,17 +122,28 @@ services:
       mongodb:
         condition: service_started
 
+  website:
+    image: tcweeei/gimy-clone-website:latest
+    restart: always
+    environment:
+      RESOURCE_DOMAIN: api-media
+    depends_on:
+      api-affair:
+        condition: service_started
+      api-upload:
+        condition: service_started
+      api-media:
+        condition: service_started
 
   mongodb:
     image: mongo:latest
     restart: always
     volumes:
       - mongodb_data:/data/db
+      - mongodb_config_data:/data/configdb
     environment:
       MONGO_INITDB_ROOT_USERNAME: DefaultUser
       MONGO_INITDB_ROOT_PASSWORD: DefaultPassword
-    ports:
-      - "27017:27017"
   minio:
     image: minio/minio:latest
     volumes:
@@ -147,13 +152,9 @@ services:
       MINIO_ROOT_USER: DefaultUser
       MINIO_ROOT_PASSWORD: DefaultPassword
     command: server /data
-    ports:
-      - "9000:9000"
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
     restart: always
-    ports:
-      - "9200:9200"
     environment:
       - "discovery.type=single-node"
       - "xpack.security.enabled=false"
@@ -162,16 +163,12 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
-
   redis:
     image: redis:latest
     restart: always
     command: redis-server --requirepass DefaultPassword
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
-
   grafana:
     image: grafana/grafana
     restart: always
@@ -181,15 +178,13 @@ services:
       - GF_SECURITY_ADMIN_USER=DefaultUser
       - GF_SECURITY_ADMIN_PASSWORD=DefaultPassword
     volumes:
-      - grafana-storage:/var/lib/grafana
-
+      - grafana_storage:/var/lib/grafana
   prometheus:
     restart: always
     image: prom/prometheus
     volumes:
-      - prometheus-data:/prometheus
+      - prometheus_data:/prometheus
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-
   nginx:
     image: nginx
     restart: always
@@ -199,27 +194,24 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
+      website:
+        condition: service_started
       api-affair:
         condition: service_started
       api-upload:
         condition: service_started
       api-media:
         condition: service_started
-
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:latest
     restart: always
     command:
       - '-nginx.scrape-uri=http://nginx/status'
-    ports:
-      - "9113:9113"
     depends_on:
       - nginx
   node_exporter:
     restart: always
     image: prom/node-exporter:latest
-    ports:
-      - "9100:9100"
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -230,10 +222,10 @@ services:
       - "--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)"
   kafka:
     image: confluentinc/confluent-local:latest
-    ports:
-      - "9092:9092"
-      - "8082:8082"
     restart: always
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+      - kafka_secrets:/etc/kafka/secrets
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
@@ -255,8 +247,11 @@ services:
 
 volumes:
   mongodb_data:
+  mongodb_config_data:
   minio_data:
   elasticsearch_data:
   redis_data:
-  grafana-storage:
-  prometheus-data:
+  grafana_storage:
+  prometheus_data:
+  kafka_data:
+  kafka_secrets:
