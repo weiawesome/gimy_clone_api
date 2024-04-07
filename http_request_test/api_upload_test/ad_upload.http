@@ -1,0 +1,87 @@
+### Upload advertisement with type of FILM
+POST {{HOST_URL}}/api/{{API_VERSION}}/upload/ad
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename={{AD_FILM_FILE}}
+Content-Type: video/mp4
+
+{{AD_FILM_FILE}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="advertisement_type";
+Content-Type: text/plain
+
+FILM
+
+--WebAppBoundary
+Content-Disposition: form-data; name="expired_time";
+Content-Type: text/plain
+
+{{AD_EXPIRED_TIME}}
+
+### Upload advertisement with type of WEB_BAR
+POST {{HOST_URL}}/api/{{API_VERSION}}/upload/ad
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename={{AD_WEB_BAR_FILE}}
+Content-Type: image/gif
+
+{{AD_WEB_BAR_FILE}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="advertisement_type";
+Content-Type: text/plain
+
+WEB_BAR
+
+--WebAppBoundary
+Content-Disposition: form-data; name="expired_time";
+Content-Type: text/plain
+
+{{AD_EXPIRED_TIME}}
+
+### Upload advertisement with type of WEB
+POST {{HOST_URL}}/api/{{API_VERSION}}/upload/ad
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename={{AD_WEB_FILE}}
+Content-Type: image/png
+
+{{AD_WEB_FILE}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="advertisement_type";
+Content-Type: text/plain
+
+WEB
+
+--WebAppBoundary
+Content-Disposition: form-data; name="expired_time";
+Content-Type: text/plain
+
+{{AD_EXPIRED_TIME}}
+
+### Upload advertisement with type of WEB_CORNER
+POST {{HOST_URL}}/api/{{API_VERSION}}/upload/ad
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename={{AD_WEB_CORNER_FILE}}
+Content-Type: image/jpeg
+
+{{AD_WEB_CORNER_FILE}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="advertisement_type";
+Content-Type: text/plain
+
+WEB_CORNER
+
+--WebAppBoundary
+Content-Disposition: form-data; name="expired_time";
+Content-Type: text/plain
+
+{{AD_EXPIRED_TIME}}

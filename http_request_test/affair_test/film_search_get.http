@@ -1,0 +1,7 @@
+### Search the films with celebrity
+GET {{HOST_URL}}/api/{{API_VERSION}}/affair/search/celebrity?content={{SEARCH_CONTENT}}
+Accept: application/json
+
+### Search the films with content
+GET {{HOST_URL}}/api/{{API_VERSION}}/affair/search/content?content={{SEARCH_CONTENT}}
+Accept: application/json

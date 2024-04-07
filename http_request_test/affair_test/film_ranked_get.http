@@ -1,0 +1,3 @@
+### Get the ranked films with category
+GET {{HOST_URL}}/api/{{API_VERSION}}/affair/ranked/{{FILM_CATEGORY}}
+Accept: application/json

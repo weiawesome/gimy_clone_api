@@ -1,0 +1,3 @@
+### Get advertisment with specific type
+GET {{HOST_URL}}/api/{{API_VERSION}}/affair/ad/{{AD_TYPE}}
+Accept: application/json

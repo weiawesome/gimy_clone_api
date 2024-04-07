@@ -1,0 +1,2 @@
+### Get the media list for specific film
+GET {{HOST_URL}}/api/{{API_VERSION}}/resource/media/{{MEDIA_BUCKET}}/{{MEDIA_FILE}}

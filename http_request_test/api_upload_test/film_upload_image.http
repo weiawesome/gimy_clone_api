@@ -1,0 +1,9 @@
+### Upload image for the soecific film
+POST {{HOST_URL}}/api/{{API_VERSION}}/upload/media/image/{{FILM_ID}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename={{FILM_IMAGE_FILE}}
+Content-Type: image/png
+
+{{FILM_IMAGE_FILE}}

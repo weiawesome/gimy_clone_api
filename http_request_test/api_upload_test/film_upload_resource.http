@@ -1,0 +1,9 @@
+### Add ad
+POST {{HOST_URL}}/api/{{API_VERSION}}/upload/media/resource/{{FILM_ROUTE}}/{{FILM_ID}}/{{FILM_EPISODE}}?state={{FILM_STATE}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename={{FILM_FILE}}
+Content-Type: video/mp4
+
+{{FILM_FILE}}

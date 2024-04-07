@@ -1,0 +1,7 @@
+### Get the specific film information
+GET {{HOST_URL}}/api/{{API_VERSION}}/affair/film_information/{{FILM_ID}}
+Accept: application/json
+
+### Get the routes for the specific film
+GET {{HOST_URL}}/api/{{API_VERSION}}/affair/film_information/routes/{{FILM_ID}}
+Accept: application/json

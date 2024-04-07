@@ -1,0 +1,16 @@
+### Create a film with specifc information
+POST {{HOST_URL}}/api/{{API_VERSION}}/upload/media/
+Content-Type: application/json
+
+{
+  "title": "{{FILM_TITLE}}",
+  "type": "{{FILM_TYPE}}",
+  "category": "{{FILM_CATEGORY}}",
+  "state": "{{FILM_STATE}}",
+  "actors": ["{{ACTOR_1}}","{{ACTOR_2}}"],
+  "directors:": ["{{DIRECTOR_1}}","{{DIRECTOR_2}}"],
+  "introduction": "{{FILM_INTRODUCTION}}",
+  "releaseYear": {{FILM_RELEASE_YEAR}},
+  "language": "{{FILM_LANGUAGE}}",
+  "location": "{{FILM_LOCATION}}"
+}

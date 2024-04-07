@@ -1,0 +1,7 @@
+### Get the popular films with type
+GET {{HOST_URL}}/api/{{API_VERSION}}/affair/popular/type/{{FILM_TYPE}}
+Accept: application/json
+
+### Get the popular films with category
+GET {{HOST_URL}}/api/{{API_VERSION}}/affair/popular/category/{{FILM_CATEGORY}}
+Accept: application/json

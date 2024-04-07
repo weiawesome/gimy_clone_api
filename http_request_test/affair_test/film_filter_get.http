@@ -1,0 +1,7 @@
+### Get the films with specific filter
+GET {{HOST_URL}}/api/{{API_VERSION}}/affair/filter/{{FILM_TYPE}}?
+    category={{FILM_CATEGORY}}&
+    location={{FILM_LOCATION}}&
+    release_year={{FILM_RELEASE_YEAR}}&
+    order_type={{ORDER_TYPE}}
+Accept: application/json
