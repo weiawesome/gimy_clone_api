@@ -1,7 +1,7 @@
 package utils
 
 const (
-	defaultTimeLimitSecond   = 1
+	defaultTimeLimitSecond   = 10
 	defaultForgetMilliSecond = 100
 )
 
