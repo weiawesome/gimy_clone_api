@@ -4,6 +4,7 @@ import (
 	pb "api_film_service/proto/film_service"
 	"api_film_service/repository/elasticsearch"
 	"api_film_service/repository/mongodb"
+	"api_film_service/repository/redis"
 	"context"
 )
 
@@ -22,14 +23,15 @@ type FilmService interface {
 	AddFilmToSearchEngine(context.Context, *pb.FilmSpecificRequest) error
 }
 type filmService struct {
+	redisRepository         redis.Repository
 	mongodbRepository       mongodb.RepositoryMongo
 	elasticsearchRepository elasticsearch.RepositoryElasticsearch
 }
 
 var service filmService
 
-func InitService(mr mongodb.RepositoryMongo, er elasticsearch.RepositoryElasticsearch) {
-	service = filmService{mongodbRepository: mr, elasticsearchRepository: er}
+func InitService(mr mongodb.RepositoryMongo, er elasticsearch.RepositoryElasticsearch, rr redis.Repository) {
+	service = filmService{mongodbRepository: mr, elasticsearchRepository: er, redisRepository: rr}
 }
 func GetService() FilmService {
 	return service
