@@ -5,6 +5,7 @@ import (
 	pb "api_film_service/proto/film_service"
 	"api_film_service/repository/elasticsearch"
 	"api_film_service/repository/mongodb"
+	"api_film_service/repository/redis"
 	"api_film_service/service"
 	"api_film_service/utils"
 	"google.golang.org/grpc"
@@ -13,11 +14,23 @@ import (
 )
 
 func main() {
+	utils.InitSingleFlight()
+
 	if err := utils.InitMongoDb(); err != nil {
 		log.Panic("error to connect mongo db")
 	}
 	defer func() {
 		err := utils.CloseMongoDbClient()
+		if err != nil {
+			return
+		}
+	}()
+	if err := utils.InitRedis(); err != nil {
+		log.Panic("error to connect redis db")
+		return
+	}
+	defer func() {
+		err := utils.CloseRedis()
 		if err != nil {
 			return
 		}
@@ -28,7 +41,8 @@ func main() {
 
 	mongodbRepository := mongodb.NewRepository()
 	elasticRepository := elasticsearch.NewRepository()
-	service.InitService(mongodbRepository, elasticRepository)
+	redisRepository := redis.NewRepository()
+	service.InitService(mongodbRepository, elasticRepository, redisRepository)
 
 	lis, err := net.Listen(utils.EnvServerProtocol(), ":"+utils.EnvServerPort())
 	if err != nil {
