@@ -11,6 +11,11 @@ const (
 
 	defaultServerProtocol = "tcp"
 	defaultServerPort     = "8080"
+
+	defaultRedisHost     = "localhost"
+	defaultRedisPort     = "6379"
+	defaultRedisPassword = "DefaultPassword"
+	defaultRedisDb       = "0"
 )
 
 var protocolTypes = map[string]bool{"tcp": true, "udp": true}
@@ -60,4 +65,32 @@ func EnvServerPort() string {
 		port = defaultServerPort
 	}
 	return port
+}
+
+func EnvRedisAddress() string {
+	var ip string
+	var port string
+	if ip = os.Getenv("REDIS_HOST"); len(ip) == 0 {
+		ip = defaultRedisHost
+	}
+	if port = os.Getenv("REDIS_PORT"); len(port) == 0 {
+		port = defaultRedisPort
+	}
+	return ip + ":" + port
+}
+
+func EnvRedisPassword() string {
+	var password string
+	if password = os.Getenv("REDIS_PASSWORD"); len(password) == 0 {
+		password = defaultRedisPassword
+	}
+	return password
+}
+
+func EnvRedisDb() string {
+	var db string
+	if db = os.Getenv("REDIS_DB"); len(db) == 0 {
+		db = defaultRedisDb
+	}
+	return db
 }
