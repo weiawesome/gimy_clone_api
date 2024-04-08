@@ -1,4 +1,4 @@
-### Add ad
+### Upload the film resource
 POST {{HOST_URL}}/api/{{API_VERSION}}/upload/media/resource/{{FILM_ROUTE}}/{{FILM_ID}}/{{FILM_EPISODE}}?state={{FILM_STATE}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
