@@ -4,6 +4,7 @@ import (
 	"api_ad_service/api"
 	pb "api_ad_service/proto/ad_service"
 	"api_ad_service/repository/mongo"
+	"api_ad_service/repository/redis"
 	"api_ad_service/service"
 	"api_ad_service/utils"
 	"google.golang.org/grpc"
@@ -12,6 +13,8 @@ import (
 )
 
 func main() {
+	utils.InitSingleFlight()
+
 	err := utils.InitMongoDb()
 	if err != nil {
 		log.Panic("error to connect mongo db")
@@ -22,9 +25,20 @@ func main() {
 			return
 		}
 	}()
+	if err := utils.InitRedis(); err != nil {
+		log.Panic("error to connect redis db")
+		return
+	}
+	defer func() {
+		err := utils.CloseRedis()
+		if err != nil {
+			return
+		}
+	}()
 
 	repository := mongo.NewRepository()
-	service.InitService(repository)
+	redisRepository := redis.NewRepository()
+	service.InitService(repository, redisRepository)
 
 	lis, err := net.Listen(utils.EnvServerProtocol(), ":"+utils.EnvServerPort())
 	if err != nil {
