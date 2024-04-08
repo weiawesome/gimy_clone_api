@@ -7,20 +7,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-//type GrpcServer interface {
-//	GetBasicFilms(context.Context, *pb.FilmBasicRequest) (*pb.FilmInformationListReply, error)
-//	GetPopularTypeFilms(context.Context, *pb.FilmPopularTypeRequest) (*pb.FilmInformationListReply, error)
-//	GetPopularCategoryFilms(context.Context, *pb.FilmPopularCategoryRequest) (*pb.FilmInformationListReply, error)
-//	GetRankedFilms(context.Context, *pb.FilmRankedRequest) (*pb.FilmRankedReply, error)
-//	GetFilterFilms(context.Context, *pb.FilmFilterRequest) (*pb.FilmInformationListReply, error)
-//	GetSpecificFilm(context.Context, *pb.FilmSpecificRequest) (*pb.FilmSpecificReply, error)
-//	GetSpecificFilmRoutes(context.Context, *pb.FilmSpecificRequest) (*pb.FilmSpecificRoutesReply, error)
-//	GetSearchFilms(context.Context, *pb.FilmSearchRequest) (*pb.FilmSearchReply, error)
-//	SaveFilm(context.Context, *pb.FilmSaveRequest) (*emptypb.Empty, error)
-//	SaveFilmEpisode(context.Context, *pb.FilmSaveEpisodeRequest) (*emptypb.Empty, error)
-//	AddPopularity(context.Context, *pb.FilmSpecificRequest) (*emptypb.Empty, error)
-//}
-
 type Server struct {
 	pb.UnimplementedFilmServer
 }
