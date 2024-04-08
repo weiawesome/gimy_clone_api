@@ -51,12 +51,12 @@ func (s filmService) GetSearchFilms(ctx context.Context, request *pb.FilmSearchR
 			case pb.SearchType_TITLE:
 				films, err = s.elasticsearchRepository.SearchFilmsGet(ctx, request)
 				if err != nil {
-					return nil, err
+					return &result, err
 				}
 			case pb.SearchType_CELEBRITY:
 				films, err = s.mongodbRepository.GetSearchFilms(ctx, request)
 				if err != nil {
-					return nil, err
+					return &result, err
 				}
 			}
 			result.Results = make([]*pb.FilmSearchResult, len(films))
