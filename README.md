@@ -95,12 +95,17 @@ In repository directory
 ## The Function For Each Service 
 ### [Service - Affair](./api_affair)
 1. Get the films by different query
+2. Get the advertisements by different query
 ### [Service - Media](./api_media)
-1. Get the playlist with specific film's episode
+1. Get the playlist in specific film's episode
 2. Get the media including image, video and GIF.
 ### [Service - Upload](./api_upload)
 1. Create a film and upload its information
 2. Upload an advertisement
 ### [Service - Upload Worker](./api_upload_worker)
+1. As a consumer get the mission from api-upload
+2. Convert a file into HLS format and upload to database
 ### [Service - Ad](./api_ad_service)
+1. Manipulate all the information about advertisement 
 ### [Service - Film](./api_film_service)
+1. Manipulate all the information about film
