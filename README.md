@@ -1,4 +1,14 @@
 # Gimy Clone API
+## Introduction
+This is a backend to support a [stream-media website project](https://github.com/weiawesome/gimy_clone_website).
+
+It divided into several service to handle with frontend request
+
+1. Upload advertisement and film resource
+2. Get the advertisement and film inserted with advertisement
+3. Get the list of films by different filter
+4. ...
+
 ## How To Start
 ### Deploy with docker-compose 
 ```shell
@@ -84,8 +94,13 @@ In repository directory
 ```
 ## The Function For Each Service 
 ### [Service - Affair](./api_affair)
+1. Get the films by different query
 ### [Service - Media](./api_media)
+1. Get the playlist with specific film's episode
+2. Get the media including image, video and GIF.
 ### [Service - Upload](./api_upload)
+1. Create a film and upload its information
+2. Upload an advertisement
 ### [Service - Upload Worker](./api_upload_worker)
 ### [Service - Ad](./api_ad_service)
 ### [Service - Film](./api_film_service)
