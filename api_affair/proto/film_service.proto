@@ -22,6 +22,8 @@ service Film {
 
   rpc SaveFilm(FilmSaveRequest) returns(google.protobuf.Empty){}
   rpc SaveFilmEpisode(FilmSaveEpisodeRequest) returns(google.protobuf.Empty){}
+  rpc DeleteFilmEpisode(FilmSaveEpisodeRequest) returns(google.protobuf.Empty){}
+  rpc DeleteFilm(FilmSpecificRequest) returns(google.protobuf.Empty){}
 
   rpc AddFilmToSearchEngine(FilmSpecificRequest) returns(google.protobuf.Empty){}
   rpc AddFilmPopularity(FilmSpecificRequest) returns(google.protobuf.Empty){}

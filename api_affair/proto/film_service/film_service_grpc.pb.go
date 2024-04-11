@@ -30,6 +30,8 @@ const (
 	Film_GetSearchFilms_FullMethodName          = "/film.Film/GetSearchFilms"
 	Film_SaveFilm_FullMethodName                = "/film.Film/SaveFilm"
 	Film_SaveFilmEpisode_FullMethodName         = "/film.Film/SaveFilmEpisode"
+	Film_DeleteFilmEpisode_FullMethodName       = "/film.Film/DeleteFilmEpisode"
+	Film_DeleteFilm_FullMethodName              = "/film.Film/DeleteFilm"
 	Film_AddFilmToSearchEngine_FullMethodName   = "/film.Film/AddFilmToSearchEngine"
 	Film_AddFilmPopularity_FullMethodName       = "/film.Film/AddFilmPopularity"
 )
@@ -48,6 +50,8 @@ type FilmClient interface {
 	GetSearchFilms(ctx context.Context, in *FilmSearchRequest, opts ...grpc.CallOption) (*FilmSearchReply, error)
 	SaveFilm(ctx context.Context, in *FilmSaveRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	SaveFilmEpisode(ctx context.Context, in *FilmSaveEpisodeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteFilmEpisode(ctx context.Context, in *FilmSaveEpisodeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteFilm(ctx context.Context, in *FilmSpecificRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AddFilmToSearchEngine(ctx context.Context, in *FilmSpecificRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AddFilmPopularity(ctx context.Context, in *FilmSpecificRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -150,6 +154,24 @@ func (c *filmClient) SaveFilmEpisode(ctx context.Context, in *FilmSaveEpisodeReq
 	return out, nil
 }
 
+func (c *filmClient) DeleteFilmEpisode(ctx context.Context, in *FilmSaveEpisodeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Film_DeleteFilmEpisode_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *filmClient) DeleteFilm(ctx context.Context, in *FilmSpecificRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Film_DeleteFilm_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *filmClient) AddFilmToSearchEngine(ctx context.Context, in *FilmSpecificRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Film_AddFilmToSearchEngine_FullMethodName, in, out, opts...)
@@ -182,6 +204,8 @@ type FilmServer interface {
 	GetSearchFilms(context.Context, *FilmSearchRequest) (*FilmSearchReply, error)
 	SaveFilm(context.Context, *FilmSaveRequest) (*emptypb.Empty, error)
 	SaveFilmEpisode(context.Context, *FilmSaveEpisodeRequest) (*emptypb.Empty, error)
+	DeleteFilmEpisode(context.Context, *FilmSaveEpisodeRequest) (*emptypb.Empty, error)
+	DeleteFilm(context.Context, *FilmSpecificRequest) (*emptypb.Empty, error)
 	AddFilmToSearchEngine(context.Context, *FilmSpecificRequest) (*emptypb.Empty, error)
 	AddFilmPopularity(context.Context, *FilmSpecificRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedFilmServer()
@@ -220,6 +244,12 @@ func (UnimplementedFilmServer) SaveFilm(context.Context, *FilmSaveRequest) (*emp
 }
 func (UnimplementedFilmServer) SaveFilmEpisode(context.Context, *FilmSaveEpisodeRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveFilmEpisode not implemented")
+}
+func (UnimplementedFilmServer) DeleteFilmEpisode(context.Context, *FilmSaveEpisodeRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteFilmEpisode not implemented")
+}
+func (UnimplementedFilmServer) DeleteFilm(context.Context, *FilmSpecificRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteFilm not implemented")
 }
 func (UnimplementedFilmServer) AddFilmToSearchEngine(context.Context, *FilmSpecificRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddFilmToSearchEngine not implemented")
@@ -420,6 +450,42 @@ func _Film_SaveFilmEpisode_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Film_DeleteFilmEpisode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FilmSaveEpisodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FilmServer).DeleteFilmEpisode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Film_DeleteFilmEpisode_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FilmServer).DeleteFilmEpisode(ctx, req.(*FilmSaveEpisodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Film_DeleteFilm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FilmSpecificRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FilmServer).DeleteFilm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Film_DeleteFilm_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FilmServer).DeleteFilm(ctx, req.(*FilmSpecificRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Film_AddFilmToSearchEngine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FilmSpecificRequest)
 	if err := dec(in); err != nil {
@@ -502,6 +568,14 @@ var Film_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveFilmEpisode",
 			Handler:    _Film_SaveFilmEpisode_Handler,
+		},
+		{
+			MethodName: "DeleteFilmEpisode",
+			Handler:    _Film_DeleteFilmEpisode_Handler,
+		},
+		{
+			MethodName: "DeleteFilm",
+			Handler:    _Film_DeleteFilm_Handler,
 		},
 		{
 			MethodName: "AddFilmToSearchEngine",
