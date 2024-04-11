@@ -22,6 +22,8 @@ service Film {
 
   rpc SaveFilm(FilmSaveRequest) returns(google.protobuf.Empty){}
   rpc SaveFilmEpisode(FilmSaveEpisodeRequest) returns(google.protobuf.Empty){}
+  rpc DeleteFilmEpisode(FilmSaveEpisodeRequest) returns(google.protobuf.Empty){}
+  rpc DeleteFilm(FilmSpecificRequest) returns(google.protobuf.Empty){}
 
   rpc AddFilmToSearchEngine(FilmSpecificRequest) returns(google.protobuf.Empty){}
   rpc AddFilmPopularity(FilmSpecificRequest) returns(google.protobuf.Empty){}
@@ -133,13 +135,14 @@ message FilmSpecificReply {
   string title = 2;
   string resource=3;
   string state=4;
-  MediaCategory category=5;
-  repeated string actors=6;
-  repeated string directors=7;
-  MediaLocation location=8;
-  uint32 releaseYear=9;
-  google.protobuf.Timestamp updateTime=10;
-  int32 popularity=11;
+  MediaType type=5;
+  MediaCategory category=6;
+  repeated string actors=7;
+  repeated string directors=8;
+  MediaLocation location=9;
+  uint32 releaseYear=10;
+  google.protobuf.Timestamp updateTime=11;
+  int32 popularity=12;
   string introduction=13;
 }
 
