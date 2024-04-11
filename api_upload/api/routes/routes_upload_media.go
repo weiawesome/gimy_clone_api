@@ -17,10 +17,14 @@ func InitUploadMediaRoutes(route *gin.RouterGroup, r minio.Repository, c *grpc.C
 
 	route.POST("/",
 		handler.FilmHandler{Service: service.NewFilmService(r, c, p)}.UploadFilm)
+	route.DELETE("/"+parameterFileID,
+		handler.FilmHandler{Service: service.NewFilmService(r, c, p)}.DeleteFilm)
 	route.POST("/search_engine/"+parameterFileID,
 		handler.FilmHandler{Service: service.NewFilmService(r, c, p)}.UploadFilmSearchEngine)
 	route.POST("/image/"+parameterFileID,
 		handler.FilmHandler{Service: service.NewFilmService(r, c, p)}.UploadFilmImage)
 	route.POST("/resource/"+parameterPlayRoute+"/"+parameterFileID+"/"+parameterFileEpisode,
 		handler.FilmHandler{Service: service.NewFilmService(r, c, p)}.UploadFilmResource)
+	route.DELETE("/resource/"+parameterPlayRoute+"/"+parameterFileID+"/"+parameterFileEpisode,
+		handler.FilmHandler{Service: service.NewFilmService(r, c, p)}.DeleteFilmResource)
 }

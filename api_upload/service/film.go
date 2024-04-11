@@ -11,6 +11,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
+	"log"
 	"mime/multipart"
 )
 
@@ -19,6 +20,8 @@ type FilmService interface {
 	UploadFilmSearchEngine(string) error
 	UploadFilmImage(string, multipart.File, string, int64) error
 	UploadFilmResource(string, string, string, multipart.File, string, string, int64, string) error
+	DeleteFilmResource(string, string, string, string) error
+	DeleteFilm(string) error
 }
 
 type filmService struct {
@@ -72,4 +75,43 @@ func (s *filmService) UploadFilmResource(route string, id string, episode string
 	}
 	msg := message.NewMessage(watermill.NewUUID(), bytes)
 	return s.p.Publish(utils.EnvKafkaFilmTopic(), msg)
+}
+func (s *filmService) DeleteFilm(id string) error {
+	c := film_service.NewFilmClient(s.c)
+	filmRoutes, err := c.GetSpecificFilmRoutes(context.Background(), &film_service.FilmSpecificRequest{Id: id})
+	if err != nil {
+		return err
+	}
+	for _, routeInformation := range filmRoutes.Routes {
+		for _, episode := range routeInformation.Episodes {
+			objectCh := s.r.List(routeInformation.Route, id, episode)
+			for object := range objectCh {
+				if object.Err != nil {
+					return object.Err
+				}
+				if err := s.r.Delete(routeInformation.Route, object.Key); err != nil {
+					return err
+				}
+			}
+			if _, err := c.DeleteFilmEpisode(context.Background(), &film_service.FilmSaveEpisodeRequest{Id: id, Route: routeInformation.Route, Episode: episode, State: ""}); err != nil {
+				return err
+			}
+		}
+	}
+	_, err = c.DeleteFilm(context.Background(), &film_service.FilmSpecificRequest{Id: id})
+	return err
+}
+func (s *filmService) DeleteFilmResource(route string, id string, episode string, state string) error {
+	objectCh := s.r.List(route, id, episode)
+	for object := range objectCh {
+		if object.Err != nil {
+			log.Fatalln(object.Err)
+		}
+		if err := s.r.Delete(route, object.Key); err != nil {
+			log.Fatalln("error to delete resource : " + err.Error())
+		}
+	}
+	c := film_service.NewFilmClient(s.c)
+	_, err := c.DeleteFilmEpisode(context.Background(), &film_service.FilmSaveEpisodeRequest{Id: id, Route: route, Episode: episode, State: state})
+	return err
 }

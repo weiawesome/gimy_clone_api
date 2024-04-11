@@ -34,6 +34,12 @@ func (m *repository) Update(data multipart.File, bucket string, file string, con
 	_, err = m.client.PutObject(context.Background(), bucket, file, data, -1, minio.PutObjectOptions{ContentType: contentType})
 	return err
 }
+func (m *repository) List(bucket string, file string, episode string) <-chan minio.ObjectInfo {
+	return m.client.ListObjects(context.Background(), bucket, minio.ListObjectsOptions{
+		Prefix:    file + "-" + episode,
+		Recursive: true,
+	})
+}
 func (m *repository) Delete(bucket string, file string) error {
 	return m.client.RemoveObject(context.Background(), bucket, file, minio.RemoveObjectOptions{})
 }

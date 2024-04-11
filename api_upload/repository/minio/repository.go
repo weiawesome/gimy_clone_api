@@ -10,6 +10,7 @@ type Repository interface {
 	Create(multipart.File, string, string, int64, string) error
 	Read(string, string) (*minio.Object, error)
 	Update(multipart.File, string, string, string) error
+	List(string, string, string) <-chan minio.ObjectInfo
 	Delete(string, string) error
 }
 

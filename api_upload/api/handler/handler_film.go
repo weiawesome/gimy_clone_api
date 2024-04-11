@@ -97,3 +97,30 @@ func (h FilmHandler) UploadFilmResource(c *gin.Context) {
 	}
 	c.Status(http.StatusOK)
 }
+
+func (h FilmHandler) DeleteFilmResource(c *gin.Context) {
+	route := c.Param(utils.GetPlayRouteParameter())
+	id := c.Param(utils.GetFileIDParameter())
+	episode := c.Param(utils.GetFileEpisodeParameter())
+	state := c.DefaultQuery(utils.GetStateParameter(), utils.GetDefaultValue())
+
+	err := h.Service.DeleteFilmResource(route, id, episode, state)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, failure.ServerError{Reason: err.Error()})
+		c.Abort()
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
+func (h FilmHandler) DeleteFilm(c *gin.Context) {
+	id := c.Param(utils.GetFileIDParameter())
+
+	err := h.Service.DeleteFilm(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, failure.ServerError{Reason: err.Error()})
+		c.Abort()
+		return
+	}
+	c.Status(http.StatusOK)
+}
