@@ -20,6 +20,8 @@ type RepositoryMongo interface {
 	GetSearchFilms(context.Context, *pb.FilmSearchRequest) ([]model.Film, error)
 	SaveFilm(context.Context, *pb.FilmSaveRequest) error
 	SaveFilmEpisode(context.Context, *pb.FilmSaveEpisodeRequest) error
+	DeleteFilmEpisode(context.Context, *pb.FilmSaveEpisodeRequest) error
+	DeleteFilm(context.Context, *pb.FilmSpecificRequest) error
 	AddPopularity(context.Context, *pb.FilmSpecificRequest) error
 }
 type repository struct {

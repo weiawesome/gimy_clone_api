@@ -46,6 +46,12 @@ func (s *Server) SaveFilm(ctx context.Context, in *pb.FilmSaveRequest) (*emptypb
 func (s *Server) SaveFilmEpisode(ctx context.Context, in *pb.FilmSaveEpisodeRequest) (*emptypb.Empty, error) {
 	return &emptypb.Empty{}, service.GetService().SaveFilmEpisode(ctx, in)
 }
+func (s *Server) DeleteFilmEpisode(ctx context.Context, in *pb.FilmSaveEpisodeRequest) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, service.GetService().DeleteFilmEpisode(ctx, in)
+}
+func (s *Server) DeleteFilm(ctx context.Context, in *pb.FilmSpecificRequest) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, service.GetService().DeleteFilm(ctx, in)
+}
 func (s *Server) AddFilmToSearchEngine(ctx context.Context, in *pb.FilmSpecificRequest) (*emptypb.Empty, error) {
 	return &emptypb.Empty{}, service.GetService().AddFilmToSearchEngine(ctx, in)
 }

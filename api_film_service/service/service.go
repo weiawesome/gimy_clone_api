@@ -20,6 +20,8 @@ type FilmService interface {
 	GetSpecificFilmRoutes(context.Context, *pb.FilmSpecificRequest) (*pb.FilmSpecificRoutesReply, error)
 	SaveFilm(context.Context, *pb.FilmSaveRequest) error
 	SaveFilmEpisode(context.Context, *pb.FilmSaveEpisodeRequest) error
+	DeleteFilmEpisode(context.Context, *pb.FilmSaveEpisodeRequest) error
+	DeleteFilm(context.Context, *pb.FilmSpecificRequest) error
 	AddFilmToSearchEngine(context.Context, *pb.FilmSpecificRequest) error
 }
 type filmService struct {

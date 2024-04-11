@@ -279,6 +279,53 @@ func (r *repository) SaveFilmEpisode(ctx context.Context, request *pb.FilmSaveEp
 	return err
 }
 
+func (r *repository) DeleteFilmEpisode(ctx context.Context, request *pb.FilmSaveEpisodeRequest) error {
+	filmCollection := r.client.Database(utils.EnvMongoDb()).Collection(utils.GetFilmCollection())
+	filmRouteCollection := r.client.Database(utils.EnvMongoDb()).Collection(utils.GetFilmRouteCollection())
+	opts := options.Update().SetUpsert(false)
+	filter := bson.M{"id": request.Id, "route": request.Route}
+	update := bson.M{
+		"$pull": bson.M{"episodes": request.Episode},
+	}
+
+	_, err := filmRouteCollection.UpdateOne(ctx, filter, update, opts)
+	if err != nil {
+		return err
+	}
+
+	_, err = filmCollection.UpdateOne(
+		ctx,
+		getIdFilter(request.Id),
+		bson.M{
+			"$set": bson.M{
+				"state":     request.State,
+				"update_at": time.Now().UTC(),
+			},
+		},
+	)
+	return err
+
+}
+
+func (r *repository) DeleteFilm(ctx context.Context, request *pb.FilmSpecificRequest) error {
+	filmCollection := r.client.Database(utils.EnvMongoDb()).Collection(utils.GetFilmCollection())
+	filmRoutesCollection := r.client.Database(utils.EnvMongoDb()).Collection(utils.GetFilmRouteCollection())
+	filmPopulationCollection := r.client.Database(utils.EnvMongoDb()).Collection(utils.GetFilmPopularityCollection())
+	filter := bson.M{"id": request.Id}
+
+	if _, err := filmPopulationCollection.DeleteMany(ctx, filter); err != nil {
+		return err
+	}
+
+	if _, err := filmRoutesCollection.DeleteMany(ctx, filter); err != nil {
+		return err
+	}
+	if _, err := filmCollection.DeleteOne(ctx, filter); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *repository) AddPopularity(ctx context.Context, request *pb.FilmSpecificRequest) error {
 	now := time.Now().UTC()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
