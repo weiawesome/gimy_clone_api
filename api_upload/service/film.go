@@ -111,6 +111,8 @@ func (s *filmService) DeleteFilmResource(route string, id string, episode string
 			log.Fatalln("error to delete resource : " + err.Error())
 		}
 	}
+	_ = s.r.Delete(utils.GetImageResourceBucket(), id)
+
 	c := film_service.NewFilmClient(s.c)
 	_, err := c.DeleteFilmEpisode(context.Background(), &film_service.FilmSaveEpisodeRequest{Id: id, Route: route, Episode: episode, State: state})
 	return err
