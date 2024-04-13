@@ -11,6 +11,7 @@ import (
 type RepositoryElasticsearch interface {
 	FilmSave(context.Context, model.Film) error
 	SearchFilmsGet(context.Context, *pb.FilmSearchRequest) ([]model.Film, error)
+	FilmDelete(string) error
 }
 type repository struct {
 	client *elasticsearch.Client

@@ -22,6 +22,7 @@ type FilmService interface {
 	SaveFilmEpisode(context.Context, *pb.FilmSaveEpisodeRequest) error
 	DeleteFilmEpisode(context.Context, *pb.FilmSaveEpisodeRequest) error
 	DeleteFilm(context.Context, *pb.FilmSpecificRequest) error
+	DeleteFilmToSearchEngine(*pb.FilmSpecificRequest) error
 	AddFilmToSearchEngine(context.Context, *pb.FilmSpecificRequest) error
 }
 type filmService struct {

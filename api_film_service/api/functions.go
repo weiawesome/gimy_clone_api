@@ -50,6 +50,10 @@ func (s *Server) DeleteFilmEpisode(ctx context.Context, in *pb.FilmSaveEpisodeRe
 	return &emptypb.Empty{}, service.GetService().DeleteFilmEpisode(ctx, in)
 }
 func (s *Server) DeleteFilm(ctx context.Context, in *pb.FilmSpecificRequest) (*emptypb.Empty, error) {
+	err := service.GetService().DeleteFilmToSearchEngine(in)
+	if err != nil {
+		return nil, err
+	}
 	return &emptypb.Empty{}, service.GetService().DeleteFilm(ctx, in)
 }
 func (s *Server) AddFilmToSearchEngine(ctx context.Context, in *pb.FilmSpecificRequest) (*emptypb.Empty, error) {

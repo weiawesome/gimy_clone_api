@@ -12,3 +12,6 @@ func (s filmService) DeleteFilmEpisode(ctx context.Context, request *pb.FilmSave
 func (s filmService) DeleteFilm(ctx context.Context, request *pb.FilmSpecificRequest) error {
 	return s.mongodbRepository.DeleteFilm(ctx, request)
 }
+func (s filmService) DeleteFilmToSearchEngine(request *pb.FilmSpecificRequest) error {
+	return s.elasticsearchRepository.FilmDelete(request.Id)
+}

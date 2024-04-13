@@ -128,3 +128,12 @@ func (r *repository) SearchFilmsGet(ctx context.Context, request *pb.FilmSearchR
 	}
 	return results, err
 }
+
+func (r *repository) FilmDelete(id string) error {
+	indexName := utils.GetSearchFilmIndex()
+	if indexName == "" {
+		return errors.New("index name is empty")
+	}
+	_, err := r.client.Delete(indexName, id)
+	return err
+}
