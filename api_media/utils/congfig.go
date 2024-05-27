@@ -9,6 +9,7 @@ const (
 	fileEpisode = "FileEpisode"
 	fileBucket  = "FileBucket"
 	file        = "File"
+	fileKey     = "FileKey"
 )
 
 var (
@@ -39,4 +40,7 @@ func GetFileBucketParameter() string {
 }
 func GetFileParameter() string {
 	return file
+}
+func GetFileKeyParameter() string {
+	return fileKey
 }
